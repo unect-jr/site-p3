@@ -118,7 +118,7 @@ export default function Servicos() {
           </h1>
         </div>
         <Image
-          src="/Fundo cor.svg"
+          src="/Fundo Cor.svg"
           alt="fundo separador"
           fill
           className="object-cover md:max-h-[415px] z-[-1]"
