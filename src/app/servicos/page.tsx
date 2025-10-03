@@ -1,4 +1,4 @@
-"use client";
+"use client"; 
 import ProductCard from "@/components/ProductCard";
 //import { MOCK_PRODUCTS } from "@/lib/mockData";
 import type { Product } from "@/lib/mockData";
