@@ -6,12 +6,12 @@ export default function Contatos() {
       {/* BANNER */}
       <div className="w-full h-[213px] md:h-[494px] relative overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <Image
-                              src="/quem somos alt.png"
-                              alt="banner bg"
-                              fill
-                              className="object-cover z-[-1] max-h-[560px] md:max-h-[800px]"
-                    />
+         <Image
+                   src="/Home_background.png"
+                   alt="banner bg"
+                   fill
+                   className="object-cover z-[-1] max-h-[520px] md:max-h-[800px]"
+                 />
         </div>
 
         <div className="absolute inset-0 z-10 flex items-center justify-center">

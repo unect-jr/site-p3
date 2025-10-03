@@ -230,11 +230,11 @@ export default function Previsao() {
           </h1>
         </div>
         <Image
-                            src="/quem somos alt.png"
-                            alt="banner bg"
-                            fill
-                            className="object-cover z-[-1] max-h-[560px] md:max-h-[800px]"
-                  />
+                  src="/Home_background.png"
+                  alt="banner bg"
+                  fill
+                  className="object-cover z-[-1] max-h-[520px] md:max-h-[800px]"
+                />
       </div>
 
       {/* CLIMA GERAL */}

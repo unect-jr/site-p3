@@ -8,11 +8,11 @@ export default function TrabalheConosco() {
       <div className="w-full h-[213px] md:h-[565px] relative overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-                    src="/quem somos alt.png"
+                    src="/Home_background.png"
                     alt="banner bg"
                     fill
-                    className="object-cover z-[-1] max-h-[560px] md:max-h-[800px]"
-          />
+                    className="object-cover z-[-1] max-h-[520px] md:max-h-[800px]"
+                  />
         </div>
 
         <div className="relative z-10 flex flex-col items-start px-6 py-8 md:px-10 md:py-16 lg:p-30">
