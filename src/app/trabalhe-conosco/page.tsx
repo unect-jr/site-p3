@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import Image from "next/image"; 
+import Image from "next/image";
+import CandidaturaForm from "@/components/CandidaturaForm";
 
 export default function TrabalheConosco() {
   return (
@@ -8,11 +8,12 @@ export default function TrabalheConosco() {
       <div className="w-full h-[213px] md:h-[565px] relative overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
-                    src="/Home_background.png"
-                    alt="banner bg"
-                    fill
-                    className="object-cover z-[-1] max-h-[520px] md:max-h-[800px]"
-                  />
+            src="/image 19.png"
+            alt="banner fundo"
+            fill
+            className="object-cover"
+            priority
+          />
         </div>
 
         <div className="relative z-10 flex flex-col items-start px-6 py-8 md:px-10 md:py-16 lg:p-30">
@@ -27,7 +28,9 @@ export default function TrabalheConosco() {
 
       <div className="flex flex-col items-center py-10 md:py-18 px-4 sm:px-6 md:px-8 lg:px-0">
         <div className="flex flex-col items-start gap-4 md:gap-5 w-full max-w-screen-xl md:w-[70%]">
-          <h1 className="font-nebula text-5xl md:text-7xl leading-tight">a p3 agro</h1>
+          <h1 className="font-nebula text-5xl md:text-7xl leading-tight">
+            a p3 agro
+          </h1>
           <p className="text-lg md:text-2xl leading-relaxed">
             Na P3Agro, enxergamos um futuro agrícola impulsionado pela inovação
             e sustentabilidade. Buscamos ser líderes na transformação da
@@ -50,7 +53,9 @@ export default function TrabalheConosco() {
 
       <div className="flex flex-col items-center py-10 md:pb-18 px-4 sm:px-6 md:px-8 lg:px-0">
         <div className="flex flex-col items-start gap-4 md:gap-5 w-full max-w-screen-xl md:w-[70%]">
-          <h1 className="font-nebula text-5xl md:text-7xl leading-tight">Porque escolher a p3 agro?</h1>
+          <h1 className="font-nebula text-5xl md:text-7xl leading-tight">
+            Porque escolher a p3 agro?
+          </h1>
           <p className="text-lg md:text-2xl leading-relaxed">
             Neste ambiente, você enfrentará diversos desafios em um cenário de
             aprendizado, colaboração, respeito e diversidade.
@@ -89,68 +94,10 @@ export default function TrabalheConosco() {
 
       <div className="flex flex-col items-center py-10 md:pb-18 px-4 sm:px-6 md:px-8 lg:px-0">
         <div className="flex flex-col items-start gap-4 md:gap-5 w-full md:w-[70%]">
-          <h1 className="font-nebula text-3xl md:text-7xl leading-tight">Candidate-se:</h1>
-          <form className="bg-[#C6CACE] p-6 md:p-8 rounded-lg w-full flex flex-col gap-3 md:gap-4 items-center">
-            <div className="w-full md:max-w-4xl"> 
-              <label className="block mb-1 font-poppins font-medium text-base md:text-xl leading-tight tracking-normal">nome completo</label>
-              <input
-                type="text"
-                className="p-2 md:p-3 rounded bg-white w-full text-gray-900"
-              />
-            </div>
-
-            <div className="w-full md:max-w-4xl">
-              <label className="block mb-1 font-poppins font-medium text-base md:text-xl leading-tight tracking-normal">data de nascimento</label>
-              <input
-                type="date"
-                className="p-2 md:p-3 rounded bg-white text-gray-700 w-full"
-              />
-            </div>
-
-            <div className="w-full md:max-w-4xl"> 
-              <label className="block mb-1 font-poppins font-medium text-base md:text-xl leading-tight tracking-normal">cidade</label>
-              <input
-                type="text"
-                className="p-2 md:p-3 rounded bg-white w-full text-gray-900"
-              />
-            </div>
-
-            <div className="w-full md:max-w-4xl"> 
-              <label className="block mb-1 font-poppins font-medium text-base md:text-xl leading-tight tracking-normal">telefone</label>
-              <input
-                type="tel"
-                className="p-2 md:p-3 rounded bg-white w-full text-gray-900"
-              />
-            </div>
-
-            <div className="w-full md:max-w-4xl"> 
-              <label className="block mb-1 font-poppins font-medium text-base md:text-xl leading-tight tracking-normal">email</label>
-              <input
-                type="email"
-                className="p-2 md:p-3 rounded bg-white w-full text-gray-900"
-              />
-            </div>
-
-            <div className="w-full md:max-w-4xl"> 
-              <label className="block mb-1 font-poppins font-medium text-base md:text-xl leading-tight tracking-normal">anexar currículo (PDF ou docx)</label>
-              <input
-                type="file"
-                accept=".pdf,.doc,.docx"
-                className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-white file:text-gray-700"
-              />
-            </div>
-
-            <div className="w-full md:max-w-4xl flex justify-start"> 
-              <Button
-                type="submit"
-                variant="default"
-                size="lg"
-                className="!bg-[#195B31] !text-white hover:!bg-[#154a28] font-poppins font-semibold text-lg md:text-xl"
-              >
-                ENVIAR
-              </Button>
-            </div>
-          </form>
+          <h1 className="font-nebula text-3xl md:text-7xl leading-tight">
+            Candidate-se:
+          </h1>
+          <CandidaturaForm />
         </div>
       </div>
     </>
