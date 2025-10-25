@@ -1,7 +1,7 @@
 # Site Institucional - P3 Agro
 
 Este é o repositório do site institucional para a Empresa P3 Agro, desenvolvido com Next.js, TypeScript, Tailwind CSS e Firebase.
- 
+
 ## Índice
 
 - [Stack de Tecnologia](#stack-de-tecnologia)
