@@ -35,9 +35,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             // Aplicando o número fornecido: (43) 99648-1850
             phone="(43) 99648-1850"
             className="mt-2"
-            message={`Olá, tenho interesse no produto "${
-              product.nome
-            }" (Preço: ${formatCurrency(product.preco)})`}
+            message={`Olá, tenho interesse no produto "${product.nome}"`}
           />
         </div>
       </div>
