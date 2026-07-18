@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import Header from "./components/header";
 import Footer from "./components/footer";
 import QueryProvider from "./components/query-provider";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -46,6 +47,7 @@ export default function RootLayout({
           <Header />
           {children}
           <Footer />
+          <FloatingWhatsApp />
         </QueryProvider>
       </body>
     </html>

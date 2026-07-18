@@ -2,7 +2,6 @@
 import Image from "next/image";
 import type { Product } from "@/lib/mockData"; // Importando nosso contrato de dados
 import { formatCurrency } from "@/lib/formatCurrency";
-import WhatsAppButton from "./WhatsAppButton";
 
 interface ProductCardProps {
   product: Product;
@@ -28,16 +27,10 @@ export default function ProductCard({ product }: ProductCardProps) {
           {product.nome}
         </h3>
 
-        {/* CTA WhatsApp */}
-        <div className="pt-2">
-          <WhatsAppButton
-            productName={product.nome}
-            // Aplicando o número fornecido: (43) 99648-1850
-            phone="(43) 99648-1850"
-            className="mt-2"
-            message={`Olá, tenho interesse no produto "${product.nome}"`}
-          />
-        </div>
+        {/* Preço */}
+        <p className="font-poppins text-base text-left text-gray-700 mt-1">
+          {formatCurrency(product.preco)}
+        </p>
       </div>
     </div>
   );
