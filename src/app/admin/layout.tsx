@@ -26,7 +26,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <h1 className="font-nebula text-xl">P3 Agro — Painel Admin</h1>
         <Button
           variant="outline"
-          className="!bg-black !text-white !border-black hover:!bg-white hover:!text-black transition-colors duration-500 ease-in-out"
+          className="!bg-black !text-white !border-black font-semibold hover:!bg-white hover:!text-black transition-colors duration-500 ease-in-out"
           onClick={handleLogout}
         >
           Sair

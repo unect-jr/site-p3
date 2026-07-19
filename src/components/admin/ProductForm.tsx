@@ -71,23 +71,34 @@ export default function ProductForm({
           value={nome}
           onChange={(e) => setNome(e.target.value)}
           required
-          className="p-2 rounded border w-full text-gray-900"
+          className="p-2 rounded border border-gray-400 w-full text-gray-900"
         />
       </div>
 
-      <div>
-        <label className="block mb-1 font-poppins font-medium text-sm">
-          Preço (R$)
+      <div className="grid grid-cols-2 gap-4 items-end">
+        <div>
+          <label className="block mb-1 font-poppins font-medium text-sm">
+            Preço (R$)
+          </label>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            value={preco}
+            onChange={(e) => setPreco(e.target.value)}
+            required
+            className="p-2 rounded border border-gray-400 w-full text-gray-900"
+          />
+        </div>
+
+        <label className="flex items-center gap-2 font-poppins text-sm pb-2.5">
+          <input
+            type="checkbox"
+            checked={ativo}
+            onChange={(e) => setAtivo(e.target.checked)}
+          />
+          Produto ativo (visível no site)
         </label>
-        <input
-          type="number"
-          step="0.01"
-          min="0"
-          value={preco}
-          onChange={(e) => setPreco(e.target.value)}
-          required
-          className="p-2 rounded border w-full text-gray-900"
-        />
       </div>
 
       <ImagePickerField
@@ -99,22 +110,23 @@ export default function ProductForm({
         onError={setError}
       />
 
-      <label className="flex items-center gap-2 font-poppins text-sm">
-        <input
-          type="checkbox"
-          checked={ativo}
-          onChange={(e) => setAtivo(e.target.checked)}
-        />
-        Produto ativo (visível no site)
-      </label>
-
       {error && <p className="text-red-600 text-sm">{error}</p>}
 
       <div className="flex justify-end gap-2 pt-2">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={submitting}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          disabled={submitting}
+          className="!bg-gray-200 !text-gray-800 !border-gray-300 hover:!bg-gray-300"
+        >
           Cancelar
         </Button>
-        <Button type="submit" disabled={submitting} className="!bg-p3green !text-white">
+        <Button
+          type="submit"
+          disabled={submitting}
+          className="!bg-p3green !text-white font-semibold hover:!bg-p3green-secondary transition-colors"
+        >
           {submitting ? "Salvando..." : submitLabel}
         </Button>
       </div>

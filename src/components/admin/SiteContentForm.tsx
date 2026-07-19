@@ -136,7 +136,7 @@ export default function SiteContentForm({
                       setTextValues((prev) => ({ ...prev, [field.key]: e.target.value }))
                     }
                     rows={4}
-                    className="p-2 rounded border w-full text-gray-900"
+                    className="p-2 rounded border border-gray-400 w-full text-gray-900"
                   />
                 ) : (
                   <input
@@ -144,7 +144,7 @@ export default function SiteContentForm({
                     onChange={(e) =>
                       setTextValues((prev) => ({ ...prev, [field.key]: e.target.value }))
                     }
-                    className="p-2 rounded border w-full text-gray-900"
+                    className="p-2 rounded border border-gray-400 w-full text-gray-900"
                   />
                 )}
               </div>

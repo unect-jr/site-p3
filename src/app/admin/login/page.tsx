@@ -56,7 +56,7 @@ export default function AdminLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoFocus
-                className="p-2 rounded border w-full text-gray-900"
+                className="p-2 rounded border border-gray-400 w-full text-gray-900"
               />
             </div>
 

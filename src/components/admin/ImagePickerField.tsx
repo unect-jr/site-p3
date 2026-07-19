@@ -65,7 +65,11 @@ export default function ImagePickerField({
         </div>
 
         <div className="flex flex-col gap-1">
-          <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+          <Button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="!bg-p3green !text-white font-semibold hover:!bg-p3green-secondary transition-colors"
+          >
             <ImagePlus />
             {previewUrl ? "Trocar imagem" : "Escolher imagem"}
           </Button>
