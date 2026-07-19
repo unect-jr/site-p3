@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { randomUUID } from "crypto";
 import { getAllProductsForAdmin } from "@/lib/getProdutos";
-import { getFirestoreAdmin, getStorageBucket } from "@/lib/firebase-admin";
+import { getFirestoreAdmin } from "@/lib/firebase-admin";
+import { MAX_IMAGE_UPLOAD_SIZE, uploadImage } from "@/lib/uploadImage";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,28 +15,6 @@ export async function GET() {
     console.error("Erro ao listar produtos (admin):", error);
     return NextResponse.json({ error: "Erro ao listar produtos" }, { status: 500 });
   }
-}
-
-async function uploadProductImage(file: File): Promise<string> {
-  const bucket = getStorageBucket();
-  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-  const storagePath = `products/${randomUUID()}.${ext}`;
-  const token = randomUUID();
-
-  const buffer = Buffer.from(await file.arrayBuffer());
-
-  await bucket.file(storagePath).save(buffer, {
-    contentType: file.type || "application/octet-stream",
-    metadata: {
-      metadata: {
-        firebaseStorageDownloadTokens: token,
-      },
-    },
-  });
-
-  return `https://firebasestorage.googleapis.com/v0/b/${bucket.name}/o/${encodeURIComponent(
-    storagePath
-  )}?alt=media&token=${token}`;
 }
 
 export async function POST(req: Request) {
@@ -57,15 +35,14 @@ export async function POST(req: Request) {
       );
     }
 
-    const MAX_SIZE = 4 * 1024 * 1024; // 4MB (limite de body do Vercel)
-    if (file.size > MAX_SIZE) {
+    if (file.size > MAX_IMAGE_UPLOAD_SIZE) {
       return NextResponse.json(
         { error: "Imagem muito grande. Tamanho máximo: 4MB." },
         { status: 400 }
       );
     }
 
-    const imagemURL = await uploadProductImage(file);
+    const imagemURL = await uploadImage(file, "products");
 
     const docRef = await getFirestoreAdmin().collection("products").add({
       nome,

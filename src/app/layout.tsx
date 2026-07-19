@@ -5,6 +5,7 @@ import Header from "./components/header";
 import Footer from "./components/footer";
 import QueryProvider from "./components/query-provider";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+import { getSiteContent } from "@/lib/siteContent";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -29,11 +30,13 @@ export const metadata: Metadata = {
   description: "Site oficial P3 Agro",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headerFooter = await getSiteContent("headerFooter");
+
   return (
     <html lang="en">
       <head>
@@ -44,10 +47,16 @@ export default function RootLayout({
         className={`${poppins.variable} ${nebula.variable} antialiased !overflow-x-hidden`}
       >
         <QueryProvider>
-          <Header />
+          <Header logoImage={headerFooter.logoImage} />
           {children}
-          <Footer />
-          <FloatingWhatsApp />
+          <Footer
+            contactEmail={headerFooter.contactEmail}
+            whatsappPhoneDigits={headerFooter.whatsappPhoneDigits}
+            whatsappPhoneDisplay={headerFooter.whatsappPhoneDisplay}
+            instagramUrl={headerFooter.instagramUrl}
+            facebookUrl={headerFooter.facebookUrl}
+          />
+          <FloatingWhatsApp phoneDigits={headerFooter.whatsappPhoneDigits} />
         </QueryProvider>
       </body>
     </html>

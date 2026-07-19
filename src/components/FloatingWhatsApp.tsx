@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 
-const WHATSAPP_PHONE = "5543996481850";
 const DEFAULT_MESSAGE = "Olá, tenho interesse em conhecer os produtos e serviços da P3 Agro";
 const BUTTON_SIZE = 56;
 const DRAG_THRESHOLD = 6;
@@ -17,7 +16,11 @@ interface DragState {
   moved: boolean;
 }
 
-export default function FloatingWhatsApp() {
+interface FloatingWhatsAppProps {
+  phoneDigits: string;
+}
+
+export default function FloatingWhatsApp({ phoneDigits }: FloatingWhatsAppProps) {
   const pathname = usePathname();
   const buttonRef = useRef<HTMLButtonElement>(null);
   const dragState = useRef<DragState | null>(null);
@@ -66,7 +69,7 @@ export default function FloatingWhatsApp() {
 
     if (!drag?.moved) {
       const text = encodeURIComponent(DEFAULT_MESSAGE);
-      window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${text}`, "_blank", "noopener,noreferrer");
+      window.open(`https://wa.me/${phoneDigits}?text=${text}`, "_blank", "noopener,noreferrer");
     }
   }
 

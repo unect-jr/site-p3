@@ -1,19 +1,21 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import Link from "next/link"; 
+import Link from "next/link";
+import { getSiteContent } from "@/lib/siteContent";
 
-export default function Home() {
+export default async function Home() {
+  const content = await getSiteContent("home");
+
   return (
     <>
       {/* BANNER */}
       <div className="relative w-full h-[470px] md:h-[710px]">
         <div className="flex flex-col items-start px-10 py-12 md:p-30 w-[85%] lg:w-[64%]">
           <h1 className="text-white font-nebula text-4xl md:text-7xl font-bold">
-            AGRICULTURA DE PRECISÃO
+            {content.bannerTitle}
           </h1>
           <h2 className="font-poppins text-white text-xl md:text-4xl my-8 md:my-10">
-            Empresa especialista que fornece soluções tecnológicas avançadas que
-            ajudam a cultivar de maneira mais eficiente e sustentável.
+            {content.bannerSubtitle}
           </h2>
 
           <Button
@@ -40,7 +42,7 @@ export default function Home() {
         </div>
 
         <Image
-          src="/Home_background.png"
+          src={content.bannerImage}
           alt="banner bg"
           fill
           className="object-cover z-[-1] max-h-[520px] md:max-h-[800px]"

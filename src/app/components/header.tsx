@@ -2,7 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import Menu from "./menu";
 
-const Header = () => {
+interface HeaderProps {
+  logoImage: string;
+}
+
+const Header = ({ logoImage }: HeaderProps) => {
   return (
     <div className="py-4 px-10 flex items-center justify-between bg-gray-200 text-p3green">
       <Image
@@ -20,7 +24,7 @@ const Header = () => {
         height={300}
       />
       <Link href={`/`} className="z-10">
-        <Image src="/nova logo.png" alt="P3 Agro logo" width={55} height={55} />
+        <Image src={logoImage} alt="P3 Agro logo" width={55} height={55} />
       </Link>
       <Menu></Menu>
       <ul className="header-text-color space-x-12 hidden md:flex font-poppins final z-10">

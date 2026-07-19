@@ -1,11 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { ImagePlus } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import ImagePickerField from "@/components/admin/ImagePickerField";
 import type { Product } from "@/lib/mockData";
-
-const MAX_IMAGE_SIZE = 4 * 1024 * 1024; // 4MB
 
 interface ProductFormProps {
   initialProduct?: Product;
@@ -29,25 +27,13 @@ export default function ProductForm({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0] ?? null;
+  function handleImageSelected(file: File | null) {
     setError(null);
-
-    if (!file) {
-      setImageFile(null);
-      return;
-    }
-
-    if (file.size > MAX_IMAGE_SIZE) {
-      setError("Imagem muito grande. Tamanho máximo: 4MB.");
-      e.target.value = "";
-      return;
-    }
-
     setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+    }
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -104,50 +90,14 @@ export default function ProductForm({
         />
       </div>
 
-      <div>
-        <label className="block mb-1 font-poppins font-medium text-sm">Imagem</label>
-
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          className="hidden"
-        />
-
-        <div className="flex items-center gap-4">
-          <div className="relative w-24 h-24 shrink-0 rounded-md overflow-hidden border bg-gray-100 flex items-center justify-center">
-            {imagePreview ? (
-              // eslint-disable-next-line @next/next/no-img-element -- preview local (blob:), next/image não aceita esse protocolo
-              <img
-                src={imagePreview}
-                alt="Pré-visualização"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <ImagePlus className="text-gray-400 size-8" />
-            )}
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <ImagePlus />
-              {imagePreview ? "Trocar imagem" : "Escolher imagem"}
-            </Button>
-            <p className="text-xs text-gray-500">
-              {imageFile
-                ? imageFile.name
-                : initialProduct
-                ? "Deixe assim para manter a imagem atual"
-                : "PNG ou JPG, até 4MB"}
-            </p>
-          </div>
-        </div>
-      </div>
+      <ImagePickerField
+        label="Imagem"
+        previewUrl={imagePreview}
+        fileName={imageFile?.name ?? null}
+        helperText={initialProduct ? "Deixe assim para manter a imagem atual" : undefined}
+        onFileSelected={handleImageSelected}
+        onError={setError}
+      />
 
       <label className="flex items-center gap-2 font-poppins text-sm">
         <input
