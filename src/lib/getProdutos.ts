@@ -1,10 +1,10 @@
-import { firestoreAdmin } from "@/lib/firebase-admin"; // Nosso helper do Admin SDK
+import { getFirestoreAdmin } from "@/lib/firebase-admin"; // Nosso helper do Admin SDK
 import type { Product } from "@/lib/mockData"; // Reutilizamos a interface do contrato
 
 // Função para buscar os produtos ativos
 export async function getProducts(): Promise<Product[]> {
   try {
-    const productsSnapshot = await firestoreAdmin
+    const productsSnapshot = await getFirestoreAdmin()
       .collection("products")
       .where("ativo", "==", true) // Filtra apenas produtos ativos
       .get();
@@ -32,10 +32,26 @@ export async function getProducts(): Promise<Product[]> {
   }
 }
 
+// Função para buscar todos os produtos (inclusive inativos), usada no painel admin
+export async function getAllProductsForAdmin(): Promise<Product[]> {
+  const productsSnapshot = await getFirestoreAdmin().collection("products").get();
+
+  return productsSnapshot.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      nome: data.nome,
+      preco: data.preco,
+      imagemURL: data.imagemURL,
+      ativo: data.ativo,
+    } as Product;
+  });
+}
+
 // Função para buscar um produto específico por ID
 export async function getProductById(id: string): Promise<Product | null> {
   try {
-    const docSnap = await firestoreAdmin.collection("products").doc(id).get();
+    const docSnap = await getFirestoreAdmin().collection("products").doc(id).get();
 
     if (!docSnap.exists) {
       return null;

@@ -13,6 +13,7 @@ Este é o repositório do site institucional para a Empresa P3 Agro, desenvolvid
 - [Configuração do Firebase](#configuração-do-firebase)
   - [Obtendo as Credenciais do Cliente (Client SDK)](#obtendo-as-credenciais-do-cliente-client-sdk)
   - [Obtendo as Credenciais de Administrador (Admin SDK)](#obtendo-as-credenciais-de-administrador-admin-sdk)
+- [Painel Admin (/admin)](#painel-admin-admin)
 - [Rodando o Projeto](#rodando-o-projeto)
 - [Estrutura de Pastas](#estrutura-de-pastas)
 - [Deploy](#deploy)
@@ -201,6 +202,34 @@ Estas são as credenciais secretas que permitem que o nosso servidor (Next.js ro
     ```
 
 5.  Copie a longa string resultante e cole-a como o valor da variável `FIREBASE_ADMIN_SDK_BASE64` no seu arquivo `.env.local`.
+
+## Painel Admin (`/admin`)
+
+Editar produtos (nome, preço, imagem, ativo/inativo) **não é mais feito pelo Console do Firebase**. O cliente faz isso direto pelo site, em `/admin`, com uma tela de login simples.
+
+O Console do Firebase (Firestore/Storage) continua sendo necessário só para a configuração inicial do projeto (ver seção acima) — o dia a dia de edição de produtos passa a ser todo pelo `/admin`.
+
+### Configurar
+
+No `.env.local`, defina:
+
+```env
+# Painel Admin (/admin)
+ADMIN_PASSWORD=uma-senha-forte-aqui
+ADMIN_SESSION_SECRET=uma-string-aleatoria-longa-e-secreta
+```
+
+- `ADMIN_PASSWORD`: a senha que o cliente usa para entrar em `/admin`. É uma senha única, compartilhada — não há cadastro de usuários.
+- `ADMIN_SESSION_SECRET`: chave usada para assinar o cookie de sessão. Gere uma string aleatória longa (ex: `openssl rand -hex 32`) e não a compartilhe.
+
+O painel também depende de `FIREBASE_ADMIN_SDK_BASE64` já estar configurada (seção anterior), pois todo o CRUD de produtos passa pelo Admin SDK no servidor.
+
+### Usar
+
+1. Acesse `/admin` — sem sessão válida, você é redirecionado para `/admin/login`.
+2. Faça login com `ADMIN_PASSWORD`.
+3. Na lista de produtos você pode criar um novo produto (com imagem), editar nome/preço/imagem/status de um existente, ou excluir.
+4. Alterações aparecem em `/servicos` na hora (o cache da listagem pública é invalidado automaticamente a cada escrita).
 
 ## Rodando o Projeto
 

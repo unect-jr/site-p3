@@ -9,6 +9,7 @@ if (!admin.apps.length) {
 
     admin.initializeApp({
       credential: admin.credential.cert(JSON.parse(serviceAccountJson)),
+      storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
     });
   } catch (error: unknown) {
     if (error instanceof Error) {
@@ -22,4 +23,20 @@ if (!admin.apps.length) {
   }
 }
 
-export const firestoreAdmin = admin.firestore();
+function ensureInitialized() {
+  if (!admin.apps.length) {
+    throw new Error(
+      "Firebase Admin SDK not initialized — check FIREBASE_ADMIN_SDK_BASE64"
+    );
+  }
+}
+
+export function getFirestoreAdmin() {
+  ensureInitialized();
+  return admin.firestore();
+}
+
+export function getStorageBucket() {
+  ensureInitialized();
+  return admin.storage().bucket();
+}

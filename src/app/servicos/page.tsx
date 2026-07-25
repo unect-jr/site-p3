@@ -1,9 +1,10 @@
-"use client"; 
+"use client";
 import ProductCard from "@/components/ProductCard";
-//import { MOCK_PRODUCTS } from "@/lib/mockData";
 import type { Product } from "@/lib/mockData";
+import { DEFAULT_SERVICOS, type ServicosContent } from "@/lib/siteContentDefaults";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import {
   Carousel,
@@ -29,48 +30,9 @@ function useIsMobile(breakpoint = 768) {
   return isMobile;
 }
 
-const servicos = [
-  {
-    titulo: "MONITORES",
-    texto:
-      "Dispositivo que monitora em tempo real todas as atividades. Na agricultura, também são chamados de GPS, são verdadeiros amigos do produtor quando se trata de produção no campo, principalmente se você quer começar a implementar a agricultura de precisão na sua propriedade.",
-    desktopImg: "/monitor.png",
-    mobileImg: "/monitor_carousel.png",
-  },
-  {
-    titulo: "ANTENAS GPS",
-    texto: "São dispositivos que recebem sinais dos satélites GPS.",
-    desktopImg: "/antena.png",
-    mobileImg: "/antena_carousel.png",
-  },
-  {
-    titulo: "PILOTO AUTOMATICO",
-    texto:
-      "O piloto automático na agricultura de precisão permite a automação de veículos agrícolas, melhorando a precisão nas operações de plantio, colheita e pulverização.",
-    desktopImg: "/piloto_automatico.png",
-    mobileImg: "/piloto_carousel.png",
-  },
-];
-
-const equipamentos = [
-  {
-    img: "/tablet.png",
-    texto: "Desligamento linha à linha para todas plantadeiras sistema Isobus",
-  },
-  {
-    img: "/repotenciamento.png",
-    texto: "Repotenciamento de motores, especialista na linha agrícola.",
-  },
-  {
-    img: "/plantio.png",
-    texto: "Projeto de linhas de plantio para sistema linha a linha",
-  },
-];
-
 export default function Servicos() {
   const isMobile = useIsMobile();
 
-  //const products = MOCK_PRODUCTS.filter((product) => product.ativo);
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
@@ -90,31 +52,73 @@ export default function Servicos() {
     fetchProducts();
   }, []);
 
+  const { data: content = DEFAULT_SERVICOS } = useQuery({
+    queryKey: ["site-content", "servicos"],
+    queryFn: async (): Promise<ServicosContent> => {
+      const res = await fetch("/api/site-content/servicos");
+      if (!res.ok) throw new Error("Network response was not ok");
+      return res.json();
+    },
+  });
+
+  const servicos = useMemo(
+    () => [
+      {
+        titulo: content.servico1Titulo,
+        texto: content.servico1Texto,
+        desktopImg: content.servico1DesktopImg,
+        mobileImg: content.servico1MobileImg,
+      },
+      {
+        titulo: content.servico2Titulo,
+        texto: content.servico2Texto,
+        desktopImg: content.servico2DesktopImg,
+        mobileImg: content.servico2MobileImg,
+      },
+      {
+        titulo: content.servico3Titulo,
+        texto: content.servico3Texto,
+        desktopImg: content.servico3DesktopImg,
+        mobileImg: content.servico3MobileImg,
+      },
+    ],
+    [content]
+  );
+
+  const equipamentos = useMemo(
+    () => [
+      { img: content.equip1Img, texto: content.equip1Texto },
+      { img: content.equip2Img, texto: content.equip2Texto },
+      { img: content.equip3Img, texto: content.equip3Texto },
+    ],
+    [content]
+  );
+
   return (
     <>
       {/* BANNER */}
       <div className="w-full relative min-h-[300px] md:min-h-[415px]">
         <div className="flex flex-col items-center justify-center p-12 md:p-24 relative z-10">
           <h1 className="text-white font-nebula text-3xl md:text-6xl">
-            Serviços & Produtos
+            {content.bannerTitle}
           </h1>
           <h2 className="text-white text-xl md:text-3xl my-2 md:my-5">
-            Uma gama diversificada de produtos e serviços de qualidade.
+            {content.bannerSubtitle}
           </h2>
         </div>
         <Image
-                  src="/Home_background.png"
-                  alt="banner bg"
-                  fill
-                  className="object-cover z-[-1] max-h-[520px] md:max-h-[800px]"
-                />
+          src={content.bannerImage}
+          alt="banner bg"
+          fill
+          className="object-cover z-[-1] max-h-[520px] md:max-h-[800px]"
+        />
       </div>
 
       {/* SEPARADOR */}
       <div className="w-full relative">
         <div className="flex flex-col items-center py-4 md:py-8 relative z-10">
           <h1 className="text-black font-nebula text-3xl md:text-6xl">
-            Serviços
+            {content.servicosHeading}
           </h1>
         </div>
         <Image
@@ -181,10 +185,10 @@ export default function Servicos() {
       <div className="w-full relative py-12 bg-[#FAFAFA]">
         <div className="flex flex-col items-start justify-center px-4 max-w-7xl mx-auto">
           <h1 className="text-black font-nebula text-2xl md:text-5xl mb-2">
-            Equipamentos e inovações
+            {content.equipamentosHeading}
           </h1>
           <h2 className="text-black text-xl md:text-2xl mb-8">
-            Com alta tecnologia, oferecemos o melhor do AGRO para você!
+            {content.equipamentosSubheading}
           </h2>
 
           {/* DESKTOP GRID */}
@@ -239,10 +243,10 @@ export default function Servicos() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h1 className="font-nebula text-4xl md:text-5xl text-black">
-              CONFIRA NOSSOS PRODUTOS
+              {content.produtosSectionTitle}
             </h1>
             <p className="text-lg md:text-xl text-gray-700 mt-2">
-              Descubra o novo padrão de qualidade.
+              {content.produtosSectionSubtitle}
             </p>
           </div>
 
