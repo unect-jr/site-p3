@@ -23,7 +23,7 @@
     "firebase-tools": "^14.11.0",
     "keen-slider": "^6.8.6",
     "lucide-react": "^0.503.0",
-    "next": "^15.5.5",
+    "next": "^15.5.21",
     "nodemailer": "^7.0.9",
     "postcss": "^8.5.3",
     "react": "^19.1.0",
