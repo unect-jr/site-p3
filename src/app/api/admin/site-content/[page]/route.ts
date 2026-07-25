@@ -1,36 +1,11 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
-import { getFirestoreAdmin } from "@/lib/firebase-admin";
-import { getSiteContent, isSiteContentPageKey, type SiteContentPageKey } from "@/lib/siteContent";
+import { getSiteContent, isSiteContentPageKey } from "@/lib/siteContent";
 import { SITE_CONTENT_FIELDS } from "@/lib/siteContentFields";
-import { MAX_IMAGE_UPLOAD_SIZE, deleteImageBestEffort, uploadImage } from "@/lib/uploadImage";
+import { MAX_IMAGE_UPLOAD_SIZE, uploadImage } from "@/lib/uploadImage";
+import { writeSiteContentUpdate } from "@/lib/siteContentHistory";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-function revalidatePublicPaths(page: SiteContentPageKey) {
-  switch (page) {
-    case "home":
-      revalidatePath("/");
-      break;
-    case "quemSomos":
-      revalidatePath("/quem-somos");
-      break;
-    case "servicos":
-      revalidatePath("/servicos");
-      revalidatePath("/api/site-content/servicos");
-      break;
-    case "contatos":
-      revalidatePath("/contatos");
-      break;
-    case "trabalheConosco":
-      revalidatePath("/trabalhe-conosco");
-      break;
-    case "headerFooter":
-      revalidatePath("/", "layout");
-      break;
-  }
-}
 
 export async function GET(
   _req: Request,
@@ -57,9 +32,6 @@ export async function PATCH(
   try {
     const form = await req.formData();
     const descriptors = SITE_CONTENT_FIELDS[page];
-    const docRef = getFirestoreAdmin().collection("siteContent").doc(page);
-    const existing = await docRef.get();
-    const existingData = existing.data() ?? {};
 
     const updates: Record<string, string> = {};
 
@@ -74,7 +46,6 @@ export async function PATCH(
             );
           }
           updates[field.key] = await uploadImage(file, "siteContent");
-          await deleteImageBestEffort(existingData[field.key]);
         }
         continue;
       }
@@ -85,9 +56,7 @@ export async function PATCH(
       }
     }
 
-    await docRef.set(updates, { merge: true });
-
-    revalidatePublicPaths(page);
+    await writeSiteContentUpdate(page, updates);
 
     return NextResponse.json({ ok: true });
   } catch (error) {
