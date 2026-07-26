@@ -1,15 +1,16 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-import { getAllProductsForAdmin } from "@/lib/getProdutos";
+import { getAllProductsForAdmin, getDeletedProductsForAdmin } from "@/lib/getProdutos";
 import { getFirestoreAdmin } from "@/lib/firebase-admin";
 import { MAX_IMAGE_UPLOAD_SIZE, uploadImage } from "@/lib/uploadImage";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const products = await getAllProductsForAdmin();
+    const trash = new URL(req.url).searchParams.get("trash") === "1";
+    const products = trash ? await getDeletedProductsForAdmin() : await getAllProductsForAdmin();
     return NextResponse.json(products);
   } catch (error) {
     console.error("Erro ao listar produtos (admin):", error);

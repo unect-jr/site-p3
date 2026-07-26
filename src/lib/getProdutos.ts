@@ -1,6 +1,19 @@
 import { getFirestoreAdmin } from "@/lib/firebase-admin"; // Nosso helper do Admin SDK
 import type { Product } from "@/lib/mockData"; // Reutilizamos a interface do contrato
 
+export interface AdminProduct extends Product {
+  deletedAt: string | null;
+}
+
+// Coleção pequena, lida inteira sem paginação — por isso o filtro de
+// "não excluído" é feito aqui em memória, não com uma query
+// `.where("deletedAt","==",null)` no Firestore (que não bateria com
+// documentos que nunca tiveram esse campo, excluindo produtos antigos por
+// engano). Se o catálogo crescer bastante, mover esse filtro pro Firestore.
+function isNotDeleted(data: FirebaseFirestore.DocumentData): boolean {
+  return !data.deletedAt;
+}
+
 // Função para buscar os produtos ativos
 export async function getProducts(): Promise<Product[]> {
   try {
@@ -13,16 +26,18 @@ export async function getProducts(): Promise<Product[]> {
       return [];
     }
 
-    const products: Product[] = productsSnapshot.docs.map((doc) => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        nome: data.nome,
-        preco: data.preco,
-        imagemURL: data.imagemURL,
-        ativo: data.ativo,
-      } as Product; // Type assertion para garantir a conformidade
-    });
+    const products: Product[] = productsSnapshot.docs
+      .filter((doc) => isNotDeleted(doc.data()))
+      .map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          nome: data.nome,
+          preco: data.preco,
+          imagemURL: data.imagemURL,
+          ativo: data.ativo,
+        } as Product; // Type assertion para garantir a conformidade
+      });
 
     return products;
   } catch (error) {
@@ -32,20 +47,31 @@ export async function getProducts(): Promise<Product[]> {
   }
 }
 
-// Função para buscar todos os produtos (inclusive inativos), usada no painel admin
-export async function getAllProductsForAdmin(): Promise<Product[]> {
+function toAdminProduct(doc: FirebaseFirestore.QueryDocumentSnapshot): AdminProduct {
+  const data = doc.data();
+  const deletedAt = data.deletedAt?.toDate?.() as Date | undefined;
+  return {
+    id: doc.id,
+    nome: data.nome,
+    preco: data.preco,
+    imagemURL: data.imagemURL,
+    ativo: data.ativo,
+    deletedAt: deletedAt ? deletedAt.toISOString() : null,
+  };
+}
+
+// Função para buscar todos os produtos não excluídos, usada no grid principal do admin
+export async function getAllProductsForAdmin(): Promise<AdminProduct[]> {
   const productsSnapshot = await getFirestoreAdmin().collection("products").get();
 
-  return productsSnapshot.docs.map((doc) => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      nome: data.nome,
-      preco: data.preco,
-      imagemURL: data.imagemURL,
-      ativo: data.ativo,
-    } as Product;
-  });
+  return productsSnapshot.docs.filter((doc) => isNotDeleted(doc.data())).map(toAdminProduct);
+}
+
+// Função para buscar só os produtos na lixeira (soft-deleted), usada na tela de lixeira do admin
+export async function getDeletedProductsForAdmin(): Promise<AdminProduct[]> {
+  const productsSnapshot = await getFirestoreAdmin().collection("products").get();
+
+  return productsSnapshot.docs.filter((doc) => !isNotDeleted(doc.data())).map(toAdminProduct);
 }
 
 // Função para buscar um produto específico por ID
