@@ -12,6 +12,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import ProductForm from "@/components/admin/ProductForm";
+import ProductHistoryDialog from "@/components/admin/ProductHistoryDialog";
+import ProductTrashDialog from "@/components/admin/ProductTrashDialog";
 import { formatCurrency } from "@/lib/formatCurrency";
 import type { Product } from "@/lib/mockData";
 
@@ -76,7 +78,11 @@ export default function AdminProductsPage() {
   });
 
   function handleDelete(product: Product) {
-    if (!window.confirm(`Excluir o produto "${product.nome}"? Essa ação não pode ser desfeita.`)) {
+    if (
+      !window.confirm(
+        `Mover o produto "${product.nome}" para a lixeira? Você pode restaurar depois pela Lixeira.`
+      )
+    ) {
       return;
     }
     deleteMutation.mutate(product.id);
@@ -86,9 +92,12 @@ export default function AdminProductsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-poppins font-semibold">Produtos</h2>
-        <Button className="!bg-p3green !text-white" onClick={() => setDialogState({ mode: "create" })}>
-          Novo Produto
-        </Button>
+        <div className="flex gap-2">
+          <ProductTrashDialog />
+          <Button className="!bg-p3green !text-white" onClick={() => setDialogState({ mode: "create" })}>
+            Novo Produto
+          </Button>
+        </div>
       </div>
 
       {isLoading && <p>Carregando produtos...</p>}
@@ -112,7 +121,7 @@ export default function AdminProductsPage() {
                   {product.ativo ? "Ativo" : "Inativo"}
                 </span>
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -120,6 +129,7 @@ export default function AdminProductsPage() {
                 >
                   Editar
                 </Button>
+                <ProductHistoryDialog productId={product.id} productName={product.nome} />
                 <Button
                   variant="destructive"
                   size="sm"

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
 import { getFirestoreAdmin } from "@/lib/firebase-admin";
-import { MAX_IMAGE_UPLOAD_SIZE, deleteImageBestEffort, uploadImage } from "@/lib/uploadImage";
+import { MAX_IMAGE_UPLOAD_SIZE, uploadImage } from "@/lib/uploadImage";
+import { softDeleteProduct, writeProductUpdate, type ProductContentFields } from "@/lib/productHistory";
 
 export const runtime = "nodejs";
 
@@ -20,7 +20,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Produto não encontrado" }, { status: 404 });
     }
 
-    const updates: Record<string, unknown> = {};
+    const updates: Partial<ProductContentFields> = {};
 
     const nome = form.get("nome")?.toString().trim();
     if (nome) updates.nome = nome;
@@ -48,13 +48,9 @@ export async function PATCH(
         );
       }
       updates.imagemURL = await uploadImage(file, "products");
-      await deleteImageBestEffort(existing.data()?.imagemURL);
     }
 
-    await docRef.update(updates);
-
-    revalidatePath("/api/products");
-    revalidatePath("/servicos");
+    await writeProductUpdate(id, updates);
 
     return NextResponse.json({ id, ...existing.data(), ...updates });
   } catch (error) {
@@ -77,11 +73,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Produto não encontrado" }, { status: 404 });
     }
 
-    await docRef.delete();
-    await deleteImageBestEffort(existing.data()?.imagemURL);
-
-    revalidatePath("/api/products");
-    revalidatePath("/servicos");
+    await softDeleteProduct(id);
 
     return NextResponse.json({ ok: true });
   } catch (error) {
