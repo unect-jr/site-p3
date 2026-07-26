@@ -3,6 +3,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getFirestoreAdmin } from "@/lib/firebase-admin";
 import { deleteImageBestEffort } from "@/lib/uploadImage";
 import { SITE_CONTENT_FIELDS } from "@/lib/siteContentFields";
+import { SITE_CONTENT_DEFAULTS } from "@/lib/siteContentDefaults";
 import type { SiteContentPageKey } from "@/lib/siteContent";
 
 export const MAX_LIVE_HISTORY_ENTRIES = 9;
@@ -48,13 +49,22 @@ export async function writeSiteContentUpdate(
 ): Promise<void> {
   const docRef = getFirestoreAdmin().collection("siteContent").doc(page);
   const existingSnap = await docRef.get();
-  const existingData = (existingSnap.data() ?? {}) as Record<string, string>;
+  // Mescla com os padrões do código: um campo que nunca foi salvo no
+  // Firestore ainda tem um valor "ao vivo" de verdade (o padrão exibido no
+  // site), e é contra ESSE valor que precisamos comparar — não contra
+  // `undefined`. Sem isso, a primeira edição de qualquer campo (ou de uma
+  // página inteira) nunca seria arquivada, porque `existingSnap.exists`
+  // seria falso e nada teria uma "versão anterior" registrada.
+  const existingData = {
+    ...SITE_CONTENT_DEFAULTS[page],
+    ...(existingSnap.data() ?? {}),
+  } as Record<string, string>;
 
   const changedFields = Object.keys(updates).filter(
     (key) => existingData[key] !== updates[key]
   );
 
-  const shouldArchive = existingSnap.exists && changedFields.length > 0;
+  const shouldArchive = changedFields.length > 0;
 
   if (shouldArchive) {
     await docRef.collection("history").add({
