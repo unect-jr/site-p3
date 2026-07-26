@@ -2,19 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
       const res = await fetch("/api/admin/login", {
@@ -25,14 +24,14 @@ export default function AdminLoginPage() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        setError(data?.error || "Não foi possível entrar");
+        toast.error(data?.error || "Não foi possível entrar");
         return;
       }
 
       router.push("/admin");
       router.refresh();
     } catch {
-      setError("Erro de conexão. Tente novamente.");
+      toast.error("Erro de conexão. Tente novamente.");
     } finally {
       setLoading(false);
     }
@@ -59,8 +58,6 @@ export default function AdminLoginPage() {
                 className="p-2 rounded border border-gray-400 w-full text-gray-900"
               />
             </div>
-
-            {error && <p className="text-red-600 text-sm">{error}</p>}
 
             <Button
               type="submit"

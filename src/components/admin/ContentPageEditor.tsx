@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 import SiteContentForm from "@/components/admin/SiteContentForm";
 import SiteContentHistoryDialog from "@/components/admin/SiteContentHistoryDialog";
 import { SITE_CONTENT_FIELDS, SITE_CONTENT_PAGE_LABELS } from "@/lib/siteContentFields";
@@ -26,6 +27,10 @@ export default function ContentPageEditor({ page }: ContentPageEditorProps) {
   // atualizados — daí o `key`, incrementado só depois que o refetch resolve.
   const [formKey, setFormKey] = useState(0);
 
+  useEffect(() => {
+    if (isError) toast.error("Erro ao carregar conteúdo.");
+  }, [isError]);
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -40,7 +45,6 @@ export default function ContentPageEditor({ page }: ContentPageEditorProps) {
       </div>
 
       {isLoading && <p>Carregando conteúdo...</p>}
-      {isError && <p className="text-red-600">Erro ao carregar conteúdo.</p>}
 
       {data && (
         <SiteContentForm
