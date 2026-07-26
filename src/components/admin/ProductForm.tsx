@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import ImagePickerField from "@/components/admin/ImagePickerField";
 import type { Product } from "@/lib/mockData";
@@ -25,11 +26,9 @@ export default function ProductForm({
     initialProduct?.imagemURL ?? null
   );
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   function handleImageSelected(file: File | null) {
-    setError(null);
     setImageFile(file);
     if (file) {
       setImagePreview(URL.createObjectURL(file));
@@ -38,10 +37,9 @@ export default function ProductForm({
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
 
     if (!initialProduct && !imageFile) {
-      setError("Selecione uma imagem para o produto.");
+      toast.error("Selecione uma imagem para o produto.");
       return;
     }
 
@@ -57,7 +55,7 @@ export default function ProductForm({
     try {
       await onSubmit(formData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao salvar produto");
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar produto");
     } finally {
       setSubmitting(false);
     }
@@ -107,10 +105,8 @@ export default function ProductForm({
         fileName={imageFile?.name ?? null}
         helperText={initialProduct ? "Deixe assim para manter a imagem atual" : undefined}
         onFileSelected={handleImageSelected}
-        onError={setError}
+        onError={(message) => toast.error(message)}
       />
-
-      {error && <p className="text-red-600 text-sm">{error}</p>}
 
       <div className="flex justify-end gap-2 pt-2">
         <Button

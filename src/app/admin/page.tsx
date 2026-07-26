@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -33,6 +34,10 @@ export default function AdminProductsPage() {
     queryKey: ["admin-products"],
     queryFn: fetchAdminProducts,
   });
+
+  useEffect(() => {
+    if (isError) toast.error("Erro ao carregar produtos.");
+  }, [isError]);
 
   const createMutation = useMutation({
     mutationFn: async (formData: FormData) => {
@@ -75,6 +80,9 @@ export default function AdminProductsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-products"] });
     },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : "Erro ao excluir produto");
+    },
   });
 
   function handleDelete(product: Product) {
@@ -101,7 +109,6 @@ export default function AdminProductsPage() {
       </div>
 
       {isLoading && <p>Carregando produtos...</p>}
-      {isError && <p className="text-red-600">Erro ao carregar produtos.</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {products?.map((product) => (

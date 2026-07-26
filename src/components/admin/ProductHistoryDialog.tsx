@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -42,7 +43,6 @@ export default function ProductHistoryDialog({ productId, productName }: Product
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["admin-product-history", productId],
@@ -53,6 +53,10 @@ export default function ProductHistoryDialog({ productId, productName }: Product
     },
     enabled: open,
   });
+
+  useEffect(() => {
+    if (isError) toast.error("Erro ao carregar histórico.");
+  }, [isError]);
 
   const restoreMutation = useMutation({
     mutationFn: async (versionId: string) => {
@@ -67,13 +71,12 @@ export default function ProductHistoryDialog({ productId, productName }: Product
     },
     onSuccess: () => {
       setConfirmingId(null);
-      setError(null);
       queryClient.invalidateQueries({ queryKey: ["admin-products"] });
       queryClient.invalidateQueries({ queryKey: ["admin-product-history", productId] });
       setOpen(false);
     },
     onError: (err) => {
-      setError(err instanceof Error ? err.message : "Erro ao restaurar versão");
+      toast.error(err instanceof Error ? err.message : "Erro ao restaurar versão");
     },
   });
 
@@ -90,11 +93,9 @@ export default function ProductHistoryDialog({ productId, productName }: Product
         </DialogHeader>
 
         {isLoading && <p className="text-sm text-gray-600">Carregando histórico...</p>}
-        {isError && <p className="text-sm text-red-600">Erro ao carregar histórico.</p>}
         {data && data.length === 0 && (
           <p className="text-sm text-gray-600">Nenhuma alteração anterior registrada ainda.</p>
         )}
-        {error && <p className="text-sm text-red-600">{error}</p>}
 
         <div className="flex flex-col gap-3">
           {data?.map((entry) => (
@@ -154,10 +155,7 @@ export default function ProductHistoryDialog({ productId, productName }: Product
                     type="button"
                     size="sm"
                     variant="outline"
-                    onClick={() => {
-                      setError(null);
-                      setConfirmingId(entry.id);
-                    }}
+                    onClick={() => setConfirmingId(entry.id)}
                   >
                     Restaurar
                   </Button>

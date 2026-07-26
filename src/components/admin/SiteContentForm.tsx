@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import ImagePickerField from "@/components/admin/ImagePickerField";
 import type { SiteContentFieldDescriptor } from "@/lib/siteContentFields";
@@ -41,7 +42,6 @@ export default function SiteContentForm({
     return values;
   });
 
-  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   const groups = useMemo(() => {
@@ -85,13 +85,12 @@ export default function SiteContentForm({
       window.setTimeout(() => setSuccess(false), 4000);
     },
     onError: (err) => {
-      setError(err instanceof Error ? err.message : "Erro ao salvar conteúdo");
+      toast.error(err instanceof Error ? err.message : "Erro ao salvar conteúdo");
     },
   });
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
     mutation.mutate();
   }
 
@@ -119,7 +118,7 @@ export default function SiteContentForm({
                       }));
                     }
                   }}
-                  onError={setError}
+                  onError={(message) => toast.error(message)}
                 />
               );
             }
@@ -153,7 +152,6 @@ export default function SiteContentForm({
         </div>
       ))}
 
-      {error && <p className="text-red-600 text-sm">{error}</p>}
       {success && <p className="text-green-700 text-sm">Conteúdo salvo com sucesso.</p>}
 
       <div className="flex justify-end">

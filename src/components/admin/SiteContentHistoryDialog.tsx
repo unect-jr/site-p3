@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -29,7 +30,6 @@ export default function SiteContentHistoryDialog({ page, onRestored }: SiteConte
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const descriptors = SITE_CONTENT_FIELDS[page];
   const fieldLabels = Object.fromEntries(descriptors.map((field) => [field.key, field.label]));
@@ -45,6 +45,10 @@ export default function SiteContentHistoryDialog({ page, onRestored }: SiteConte
     enabled: open,
   });
 
+  useEffect(() => {
+    if (isError) toast.error("Erro ao carregar histórico.");
+  }, [isError]);
+
   const restoreMutation = useMutation({
     mutationFn: async (versionId: string) => {
       const res = await fetch(`/api/admin/site-content/${page}/history/${versionId}/restore`, {
@@ -57,13 +61,12 @@ export default function SiteContentHistoryDialog({ page, onRestored }: SiteConte
     },
     onSuccess: async () => {
       setConfirmingId(null);
-      setError(null);
       await onRestored?.();
       queryClient.invalidateQueries({ queryKey: ["admin-site-content-history", page] });
       setOpen(false);
     },
     onError: (err) => {
-      setError(err instanceof Error ? err.message : "Erro ao restaurar versão");
+      toast.error(err instanceof Error ? err.message : "Erro ao restaurar versão");
     },
   });
 
@@ -80,11 +83,9 @@ export default function SiteContentHistoryDialog({ page, onRestored }: SiteConte
         </DialogHeader>
 
         {isLoading && <p className="text-sm text-gray-600">Carregando histórico...</p>}
-        {isError && <p className="text-sm text-red-600">Erro ao carregar histórico.</p>}
         {data && data.length === 0 && (
           <p className="text-sm text-gray-600">Nenhuma alteração anterior registrada ainda.</p>
         )}
-        {error && <p className="text-sm text-red-600">{error}</p>}
 
         <div className="flex flex-col gap-3">
           {data?.map((entry) => {
@@ -147,10 +148,7 @@ export default function SiteContentHistoryDialog({ page, onRestored }: SiteConte
                       type="button"
                       size="sm"
                       variant="outline"
-                      onClick={() => {
-                        setError(null);
-                        setConfirmingId(entry.id);
-                      }}
+                      onClick={() => setConfirmingId(entry.id)}
                     >
                       Restaurar
                     </Button>

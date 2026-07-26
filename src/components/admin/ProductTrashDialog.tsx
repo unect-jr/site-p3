@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -23,13 +24,16 @@ export default function ProductTrashDialog() {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [confirmingPurgeId, setConfirmingPurgeId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["admin-products-trash"],
     queryFn: fetchDeletedProducts,
     enabled: open,
   });
+
+  useEffect(() => {
+    if (isError) toast.error("Erro ao carregar lixeira.");
+  }, [isError]);
 
   function invalidateAll() {
     queryClient.invalidateQueries({ queryKey: ["admin-products"] });
@@ -45,11 +49,10 @@ export default function ProductTrashDialog() {
       }
     },
     onSuccess: () => {
-      setError(null);
       invalidateAll();
     },
     onError: (err) => {
-      setError(err instanceof Error ? err.message : "Erro ao restaurar produto");
+      toast.error(err instanceof Error ? err.message : "Erro ao restaurar produto");
     },
   });
 
@@ -63,11 +66,10 @@ export default function ProductTrashDialog() {
     },
     onSuccess: () => {
       setConfirmingPurgeId(null);
-      setError(null);
       invalidateAll();
     },
     onError: (err) => {
-      setError(err instanceof Error ? err.message : "Erro ao excluir produto permanentemente");
+      toast.error(err instanceof Error ? err.message : "Erro ao excluir produto permanentemente");
     },
   });
 
@@ -84,11 +86,9 @@ export default function ProductTrashDialog() {
         </DialogHeader>
 
         {isLoading && <p className="text-sm text-gray-600">Carregando lixeira...</p>}
-        {isError && <p className="text-sm text-red-600">Erro ao carregar lixeira.</p>}
         {data && data.length === 0 && (
           <p className="text-sm text-gray-600">Nenhum produto na lixeira.</p>
         )}
-        {error && <p className="text-sm text-red-600">{error}</p>}
 
         <div className="flex flex-col gap-3">
           {data?.map((product) => (
@@ -148,10 +148,7 @@ export default function ProductTrashDialog() {
                     type="button"
                     size="sm"
                     variant="destructive"
-                    onClick={() => {
-                      setError(null);
-                      setConfirmingPurgeId(product.id);
-                    }}
+                    onClick={() => setConfirmingPurgeId(product.id)}
                   >
                     Excluir permanentemente
                   </Button>

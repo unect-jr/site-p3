@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import localFont from "next/font/local";
+import { Toaster } from "sonner";
 import Header from "./components/header";
 import Footer from "./components/footer";
 import QueryProvider from "./components/query-provider";
@@ -47,6 +48,7 @@ export default async function RootLayout({
         className={`${poppins.variable} ${nebula.variable} antialiased !overflow-x-hidden`}
       >
         <QueryProvider>
+          <Toaster richColors position="top-right" />
           <Header logoImage={headerFooter.logoImage} />
           {children}
           <Footer
