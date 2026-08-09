@@ -192,7 +192,7 @@ export const DEFAULT_TRABALHE_CONOSCO: TrabalheConoscoContent = {
 };
 
 export const DEFAULT_HEADER_FOOTER: HeaderFooterContent = {
-  logoImage: "/nova logo.png",
+  logoImage: "/Imagem1.png",
   contactEmail: "agriculturadeprecisao@p3agro.com.br",
   whatsappPhoneDigits: "5543996481850",
   whatsappPhoneDisplay: "(43) 99648-1850 / (43) 99150-1850",
