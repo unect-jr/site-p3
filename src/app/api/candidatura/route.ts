@@ -1,4 +1,4 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
@@ -73,21 +73,18 @@ export async function POST(req: Request) {
       }
     }
 
-    // create transporter with env vars (adjusted for providers like Hostinger)
-    const port = Number(process.env.SMTP_PORT || 587);
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port,
-      secure: port === 465, // true for 465, false for 587 (STARTTLS)
-      requireTLS: port === 587,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-      pool: false,
-      connectionTimeout: 10_000,
-      greetingTimeout: 10_000,
-    } as any);
+    const { RESEND_API_KEY, RESEND_FROM_EMAIL, TO_EMAIL } = process.env;
+    if (!RESEND_API_KEY || !RESEND_FROM_EMAIL || !TO_EMAIL) {
+      console.error(
+        "Configuração de email ausente: verifique RESEND_API_KEY, RESEND_FROM_EMAIL e TO_EMAIL."
+      );
+      return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+    }
+    const toEmails = TO_EMAIL.split(",")
+      .map((e) => e.trim())
+      .filter(Boolean);
+
+    const resend = new Resend(RESEND_API_KEY);
 
     const attachments = file
       ? [
@@ -98,15 +95,19 @@ export async function POST(req: Request) {
         ]
       : [];
 
-    const mailOptions = {
-      from: process.env.SMTP_FROM,
-      to: process.env.TO_EMAIL,
+    const { error } = await resend.emails.send({
+      from: RESEND_FROM_EMAIL,
+      to: toEmails,
+      replyTo: email,
       subject: `Candidatura P3Agro - ${nome}`,
       text: `Novo candidato:\n\nNome: ${nome}\nNascimento: ${nascimentoFormatado}\nCidade: ${cidade}\nTelefone: ${telefone}\nEmail: ${email}`,
       attachments,
-    } as any;
+    });
 
-    await transporter.sendMail(mailOptions);
+    if (error) {
+      console.error("Erro Resend:", error);
+      return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+    }
 
     return NextResponse.json({
       ok: true,
