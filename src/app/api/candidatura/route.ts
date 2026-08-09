@@ -106,7 +106,11 @@ export async function POST(req: Request) {
 
     if (error) {
       console.error("Erro Resend:", error);
-      return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+      // DEBUG TEMPORÁRIO: remover "detail" depois de identificar a causa do 500 em produção.
+      return NextResponse.json(
+        { error: "Erro interno", detail: error },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json({
@@ -115,6 +119,10 @@ export async function POST(req: Request) {
     });
   } catch (err) {
     console.error("Erro candidatura:", err);
-    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+    // DEBUG TEMPORÁRIO: remover "detail" depois de identificar a causa do 500 em produção.
+    return NextResponse.json(
+      { error: "Erro interno", detail: err instanceof Error ? err.message : err },
+      { status: 500 }
+    );
   }
 }
