@@ -9,7 +9,7 @@ export default async function Home() {
   return (
     <>
       {/* BANNER */}
-      <div className="relative w-full h-[470px] md:h-[710px]">
+      <div className="relative w-full min-h-[470px] md:min-h-[710px]">
         <div className="flex flex-col items-start px-10 py-12 md:p-30 w-[85%] lg:w-[64%]">
           <h1 className="text-white font-nebula text-4xl md:text-7xl font-bold">
             {content.bannerTitle}
@@ -45,7 +45,7 @@ export default async function Home() {
           src={content.bannerImage}
           alt="banner bg"
           fill
-          className="object-cover z-[-1] max-h-[520px] md:max-h-[800px]"
+          className="object-cover z-[-1]"
         />
       </div>
 
